@@ -35,6 +35,6 @@
 
 int main(int argc, FAR char *argv[])
 {
-  printf("Hello, World!!\n");
+    printf("Hello, World!!\n");
   return 0;
 }
