@@ -27,6 +27,28 @@
 
 #include <uORB/uORB.h>
 
+
+struct orb_mag_scaled_s
+{
+  // uint64_t timestamp;
+  // float x;
+  // float y;
+  // float z;
+  // float temperature;
+  uint64_t timestamp;
+  float acc_x;
+  float acc_y;
+  float acc_z;
+  float temp;
+  float gyro_x;
+  float gyro_y;
+  float gyro_z;
+  float mag_x;
+  float mag_y;
+  float mag_z;
+  float temperature;
+};
+
 /****************************************************************************
  * Public Data
  ****************************************************************************/
@@ -35,5 +57,6 @@
 
 ORB_DECLARE(sensor_mag);
 ORB_DECLARE(sensor_mag_uncal);
+ORB_DECLARE(orb_mag_scaled);
 
 #endif

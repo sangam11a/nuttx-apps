@@ -36,9 +36,14 @@ static void print_sensor_mag_message(FAR const struct orb_metadata *meta,
   const orb_abstime now = orb_absolute_time();
 
   uorbinfo_raw("%s:\ttimestamp: %" PRIu64 " (%" PRIu64 " us ago) "
-               "temperature: %.2f x: %.2f y: %.2f z: %.2f",
+               "temperature: %.2f accelerometer x: %.2f y: %.2f z: %.2f \n
+               Gyroscope x: %.2f y: %.2f z: %.2f,
+               Magnetometer x: %.2f y: %.2f z: %.2f"
                meta->o_name, message->timestamp, now - message->timestamp,
-               message->temperature, message->x, message->y, message->z);
+               message->temperature, 
+               message->acc_x, message->acc_y, message->acc_z,
+               message->gyro_x, message->gyro_y, message->gyro_z,
+               message->mag_x, message->mag_y, message->mag_z);
 }
 #endif
 
