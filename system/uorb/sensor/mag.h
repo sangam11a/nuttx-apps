@@ -47,6 +47,7 @@ struct orb_mag_scaled_s
   float mag_y;
   float mag_z;
   float temperature;
+  int ANT_DEPLOYED;
 };
 
 /****************************************************************************
