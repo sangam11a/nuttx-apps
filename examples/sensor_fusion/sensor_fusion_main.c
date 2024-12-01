@@ -201,12 +201,12 @@ int main(int argc, char *argv[])
   printf("Sensor Fusion example\n");
   printf("Sample Rate: %.2f Hz\n", 1.0 / acq_period);
 
-  fd = open("/dev/imu0", O_RDONLY);
-  if (fd < 0)
-    {
-      printf("Failed to open imu0\n");
-      return EXIT_FAILURE;
-    }
+  // fd = open("/dev/imu0", O_RDONLY);
+  // if (fd < 0)
+  //   {
+  //     printf("Failed to open imu0\n");
+  //     return EXIT_FAILURE;
+  //   }
 
   for (int i = 0; i < iterations; i++)
     {
