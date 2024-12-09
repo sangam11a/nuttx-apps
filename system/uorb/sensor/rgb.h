@@ -34,5 +34,6 @@
 /* register this as object request broker structure */
 
 ORB_DECLARE(sensor_rgb);
+ORB_DECLARE(reservation_command);
 
 #endif

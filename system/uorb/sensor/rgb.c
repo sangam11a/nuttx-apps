@@ -35,9 +35,19 @@ static void print_sensor_rgb_message(FAR const struct orb_metadata *meta,
   FAR const struct sensor_rgb *message = buffer;
   const orb_abstime now = orb_absolute_time();
 
-  uorbinfo_raw("%s:\ttimestamp: %" PRIu64 " (%" PRIu64 " us ago) red: %.2f"
-               " green: %.2f blue: %.2f\n", meta->o_name, message->timestamp,
-               now - message->timestamp, message->r, message->g, message->b);
+  // uorbinfo_raw("%s:\ttimestamp: %" PRIu64 " (%" PRIu64 " us ago) red: %.2f"
+  //              " green: %.2f blue: %.2f\n", meta->o_name, message->timestamp,
+  //              now - message->timestamp, message->r, message->g, message->b);
+}
+
+static void print_sat_int_adc_message(FAR const struct orb_metadata *meta,
+                                      FAR const void *buffer)
+{
+  FAR const struct sat_int_adc_msg *message = buffer;
+  const orb_abstime now = orb_absolute_time();
+
+  uorbinfo_raw("%s:\ttimestamp: %" PRIu64" (%"PRIu64 " us ago) ",
+                meta->o_name, message->timestamp, now - message->timestamp);
 }
 #endif
 
@@ -46,3 +56,5 @@ static void print_sensor_rgb_message(FAR const struct orb_metadata *meta,
  ****************************************************************************/
 
 ORB_DEFINE(sensor_rgb, struct sensor_rgb, print_sensor_rgb_message);
+ORB_DEFINE(reservation_command, struct reservation_command, print_reservation_cmd_message);
+
