@@ -22,23 +22,6 @@
 //  * Included Files
 //  ****************************************************************************/
 
-// #include <nuttx/config.h>
-// #include <stdio.h>
-
-// /****************************************************************************
-//  * Public Functions
-//  ****************************************************************************/
-
-// /****************************************************************************
-//  * hello_main
-//  ****************************************************************************/
-
-// int main(int argc, FAR char *argv[])
-// {
-//   printf("Hello, World!!\n");
-//   return 0;
-// }
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -47,90 +30,68 @@
 #include <fcntl.h>
 #include "gpio_def.h"
 
+
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/statfs.h>
+#include "/home/sumina/nuttxspace/nuttx_cubus/APN_BOARDS/cubus_em/src/cubus_mtd.h"
+
 // Define the size for the allocation test
 // #define TEST_SIZE 1024*2   // 1 MB
-uint32_t TEST_SIZE = 0;
-void check_memory(void)
+static int        g_nerrors          = 0;
+
+static void show_statfs(const char *path)
 {
-  void *ptr;
-  size_t i;
-  size_t free_memory = 0;
-  size_t used_memory = 0;
+  struct statfs buf;
+  int ret;
 
-  // Check initial available memory
-  ptr = malloc(TEST_SIZE);
-  if (ptr != NULL)
-  {
-    printf("Successfully allocated %d MB of memory\n", TEST_SIZE / 1024);
-    free(ptr);
-  }
+  /* Try stat() against a file or directory.  It should fail with
+   * expectederror
+   */
+
+  printf("show_statfs: Try statfs(%s)\n", path);
+  ret = statfs(path, &buf);
+  if (ret == 0)
+    {
+      printf("show_statfs: statfs(%s) succeeded\n", path);
+      printf("\tFS Type           : %0" PRIx32 "\n", buf.f_type);
+      printf("\tBlock size        : %zd\n", buf.f_bsize);
+      printf("\tNumber of blocks  : %jd\n", (intmax_t)buf.f_blocks);
+      printf("\tFree blocks       : %jd\n", (intmax_t)buf.f_bfree);
+      printf("\tFree user blocks  : %jd\n", (intmax_t)buf.f_bavail);
+      printf("\tNumber file nodes : %jd\n", (intmax_t)buf.f_files);
+      printf("\tFree file nodes   : %jd\n", (intmax_t)buf.f_ffree);
+      printf("\tFile name length  : %zd\n", buf.f_namelen);
+    }
   else
-  {
-    printf("Memory allocation failed\n");
-  }
-
-  // Optionally, perform a larger allocation to test limits
-  ptr = malloc(TEST_SIZE * 10);
-  if (ptr != NULL)
-  {
-    printf("Successfully allocated %d MB of memory\n", TEST_SIZE / 1024 * 10);
-    free(ptr);
-  }
-  else
-  {
-    printf("Memory allocation failed for %d MB\n", TEST_SIZE / 1024 * 10);
-  }
-
-  // Note: Accurate free and used memory might require more specific system-level calls.
-  // This is a basic demonstration.
+    {
+      printf("show_statfs: ERROR statfs(%s) failed with errno=%d\n",
+             path, errno);
+      g_nerrors++;
+    }
 }
 
 int main(int argc, FAR char *argv[])
+// int main()
 {
-  // printf("Checking available memory.. %s.\n",argv[1]);
-  // TEST_SIZE = 1024* atoi
-  // gpio_write();
-  struct file file_p;
-  // char file_path[65];
-  char file_path[] = "/mnt/fs/sfm/mtd_mission/camera.txt";
-  // check_memory();
-  uint16_t fd;
-  gpio_write(GPIO_MUX_EN, false);
-  gpio_write(GPIO_SFM_MODE, true);
-  // gpio_write(GPIO_SFM_CS, false);
-  fd = file_open(&file_p, file_path, O_RDONLY);
-  if (fd >= 0)
-  {
-    printf("file opened\n");
-    char seek_pointer[300] = {'\0'};
-
-    // Seek to the end to get file size
-    int file_size = file_seek(&file_p, 0, SEEK_END);
-    printf("The file size is %d\n", file_size);
-
-    // Seek back to the start before reading
-    file_seek(&file_p, 0, SEEK_SET);
-
-    ssize_t bytes_read = file_read(&file_p, seek_pointer, sizeof(seek_pointer) - 1);
-    if (bytes_read < 0)
-    {
-      printf("Error reading file\n");
-    }
-    else
-    {
-      seek_pointer[bytes_read] = '\0'; // Null-terminate
-      printf("Data is %s\n", seek_pointer);
-    }
-  }
-  else
-  {
-    printf("file error %d\n", fd);
+  if(strcmp(argv[1],"1") ==0 ){
+  cubus_mtd_unmount(board_mfm_get_manifest(), "/mnt/fs/mfm/mtd_mainstorage");
   }
 
-  file_syncfs(&file_p);
-  file_close(&file_p);
+   else if(strcmp(argv[1],"2") ==0 ){
+  cubus_mtd_unmount(board_mfm_get_manifest(),"/mnt/fs/mfm/mtd_mission");
+  }
+  else if(strcmp(argv[1],"3") ==0){
+    show_statfs("/mnt/fs/mfm/mtd_mainstorage");
+  }
+  
+  else{
+    printf("wrong arg\n\n");
+    cubus_mft_configure(board_mfm_get_manifest(), 0);
+    // cubus_mft_configure(board_sfm_get_manifest(), 2);
+    
 
-  gpio_write(GPIO_SFM_MODE, false);
-  gpio_write(GPIO_MUX_EN, false);
+  }
+  // cubus_unmount(board_mfm_get_manifest());
   return 0;
 }
